@@ -19,9 +19,11 @@ const generateNumber = (min, max) => {
 const assign = async () => {
     const max = 1000;
     const min = 10000;
+    // Read current filenames in MEMPOOL
     const files = await fs.readdir(
         process.env.MEMPOOL
     );
+    // Assign new filename until unique
     let random = generateNumber(1000, 10000);
     do {
         random = generateNumber(1000, 10000);
@@ -33,19 +35,30 @@ const verified = async (txn) => {
     // Save hash for comparison
     let txHash = txn.hash;
     // Remove extraneous unhashed fields
-    delete txn.hash;
-    delete txn.timestamp;
+    let hashables = Object.fromEntries(
+        Object.entries(txn).filter(
+            ([k,v]) => {
+                return !["hash","timestamp","signature"].includes(k)
+            })
+        );
     // Make the hash from remainder
-    let hashable = JSON.stringify(txn);
+    let hashable = JSON.stringify(hashables);
     let checksum = createHash('sha256').update(hashable).digest('hex');
+    // Compare truthiness
     return checksum == txHash;
 }
 
+const signed = async (txn, key) => {
+    // Load public key
+    return true;
+}
+
 server.post("/transact", async (req, res) => {
-    let record = req.body.txn;
+    let transact = req.body.txn;
+    let pub_key = req.body.key;
     let filename = `${await assign()}.json`;
-    if(await verified(req.body.txn)){
-        fs.writeFile(`${process.env.MEMPOOL}/{filename}`, JSON.stringify(req.body.txn), (err) => {
+    if(await verified(transact) && await signed(req.body.txn.signature, pub_key)){
+        fs.writeFile(`${process.env.MEMPOOL}/${filename}`, JSON.stringify(req.body.txn), (err) => {
             if(err) {
                 console.log(`500: ${err}`);
                 res.sendStatus(500);
@@ -61,4 +74,6 @@ server.post("/transact", async (req, res) => {
 });
 
 server.post("/validate", async (req, res) => {
+    let block = req.body.block;
+    let pub_key = req.body.key;
 });
