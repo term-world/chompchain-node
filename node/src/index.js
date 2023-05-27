@@ -3,6 +3,7 @@ const http = require('http');
 const express = require('express');
 const env = require('dotenv').config(); // ({ path: '/opt/server/.env' });
 const { createHash } = require('crypto');
+const key = require('node-rsa');
 
 let server = express();
 server.use(express.json());
@@ -39,8 +40,9 @@ const verified = async (txn) => {
         Object.entries(txn).filter(
             ([k,v]) => {
                 return !["hash","timestamp","signature"].includes(k)
-            })
-        );
+            }
+        )
+    );
     // Make the hash from remainder
     let hashable = JSON.stringify(hashables);
     let checksum = createHash('sha256').update(hashable).digest('hex');
@@ -48,16 +50,16 @@ const verified = async (txn) => {
     return checksum == txHash;
 }
 
-const signed = async (txn, key) => {
-    // Load public key
+const signed = async (signature, key) => {
+    // TODO: Roll out when wallet signatures are standardized
+    // key.importKey(key, 'pkcs8');
+    // return key.verify(signature, key);
     return true;
 }
 
 server.post("/transact", async (req, res) => {
-    let transact = req.body.txn;
-    let pub_key = req.body.key;
     let filename = `${await assign()}.json`;
-    if(await verified(transact) && await signed(req.body.txn.signature, pub_key)){
+    if(await verified(req.body.txn) && await signed(req.body.txn.signature, req.body.key)){
         fs.writeFile(`${process.env.MEMPOOL}/${filename}`, JSON.stringify(req.body.txn), (err) => {
             if(err) {
                 console.log(`500: ${err}`);
