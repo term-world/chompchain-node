@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const http = require('http');
 const express = require('express');
-const env = require('dotenv').config();
+const env = require('dotenv').config({ path: '/opt/server/.env' });
 
 let server = express();
 server.use(express.json());
@@ -38,9 +38,15 @@ server.post("/transact", async (req, res) => {
     if(await verified(req.body.txn)){
         fs.writeFile(`${process.env.MEMPOOL}{filename}`, JSON.stringify(req.body.txn), (err) => {
             console.log(err);
+            res.sendStatus(500);
+            return;
         });
+        res.sendStatus(200);
+        return;
     }
-    // TODO: Send a 200 where successful
+    // I'M A TEAPOT
+    res.sendStatus(418);
+    return;
 });
 
 server.post("/validate", async (req, res) => {
