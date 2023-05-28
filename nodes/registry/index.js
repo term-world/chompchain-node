@@ -21,12 +21,14 @@ server.post("/register", async (req, res) => {
     // care about bad actors?
 
     let identity = {
-        host: req.body.hostname,
+        host: req.headers["x-real-ip"],
         port: req.body.port
     }
 
     nodes.push(identity);
     // Write to file?
+    res.status(200);
+    return;
 });
 
 server.get("/directory", (req, res) => {

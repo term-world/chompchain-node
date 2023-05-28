@@ -17,11 +17,12 @@ app.listen(5000);
 let registered = false;
 
 do {
-    http.get('http://dir.chain.chompe.rs', (response) => {
+    let request = http.post('http://dir.chain.chompe.rs/register', (response) => {
         response.on('data', (dir) => {
             registered = true;
         });
     });
+    request.send(JSON.stringify({port: 5000});
 }while(!registered);
 
 const generateNumber = (min, max) => {
