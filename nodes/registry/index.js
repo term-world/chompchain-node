@@ -27,7 +27,7 @@ server.post("/register", async (req, res) => {
 
     nodes.push(identity);
     // Write to file?
-}
+});
 
 server.get("/directory", (req, res) => {
     res.status(200).send(JSON.stringify(nodes));
