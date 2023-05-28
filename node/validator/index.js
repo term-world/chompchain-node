@@ -1,15 +1,28 @@
 const fs = require('fs-extra');
 const http = require('http');
-const express = require('express');
-const env = require('dotenv').config(); // ({ path: '/opt/server/.env' });
-const { createHash } = require('crypto');
 const key = require('node-rsa');
+const express = require('express');
+const { createHash } = require('crypto');
+const env = require('dotenv').config({
+    path: '/opt/server/.env'
+});
 
 let server = express();
 server.use(express.json());
 
 const app = http.createServer(server);
 app.listen(5000);
+
+// TODO: Register as a node on the network
+let registered = false;
+
+do {
+    http.get('http://dir.chain.chompe.rs', (response) => {
+        response.on('data', (dir) = > {
+            registered = true;
+        });
+    }
+} (while !registered);
 
 const generateNumber = (min, max) => {
     return Math.floor(
@@ -58,9 +71,12 @@ const signed = async (signature, key) => {
 }
 
 server.post("/transact", async (req, res) => {
+    let key = req.body.key;
+    let sig = req.body.txn.signature;
+    let txn = req.body.txn;
     let filename = `${await assign()}.json`;
-    if(await verified(req.body.txn) && await signed(req.body.txn.signature, req.body.key)){
-        fs.writeFile(`${process.env.MEMPOOL}/${filename}`, JSON.stringify(req.body.txn), (err) => {
+    if(await verified(txn) && await signed(sig, key)){
+        fs.writeFile(`${process.env.MEMPOOL}/${filename}`, JSON.stringify(txn), (err) => {
             if(err) {
                 console.log(`500: ${err}`);
                 res.sendStatus(500);
@@ -77,5 +93,5 @@ server.post("/transact", async (req, res) => {
 
 server.post("/validate", async (req, res) => {
     let block = req.body.block;
-    let pub_key = req.body.key;
+    let pubKey = req.body.key;
 });
