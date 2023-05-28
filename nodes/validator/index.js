@@ -18,11 +18,11 @@ let registered = false;
 
 do {
     http.get('http://dir.chain.chompe.rs', (response) => {
-        response.on('data', (dir) = > {
+        response.on('data', (dir) => {
             registered = true;
         });
-    }
-} (while !registered);
+    });
+}while(!registered);
 
 const generateNumber = (min, max) => {
     return Math.floor(
