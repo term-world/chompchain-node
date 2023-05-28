@@ -31,4 +31,4 @@ server.post("/register", async (req, res) => {
 
 server.get("/directory", (req, res) => {
     res.status(200).send(JSON.stringify(nodes));
-}
+});
