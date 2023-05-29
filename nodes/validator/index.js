@@ -1,10 +1,11 @@
 const fs = require('fs-extra');
 const http = require('http');
 const key = require('node-rsa');
+const axios = require('axios');
 const express = require('express');
 const { createHash } = require('crypto');
 const env = require('dotenv').config({
-    path: '/opt/server/.env'
+    path: '../.env'
 });
 
 let server = express();
@@ -13,17 +14,15 @@ server.use(express.json());
 const app = http.createServer(server);
 app.listen(5000);
 
-// TODO: Register as a node on the network
-let registered = false;
-
-do {
-    let request = http.post('http://dir.chain.chompe.rs/register', (response) => {
-        response.on('data', (dir) => {
-            registered = true;
-        });
+let registration = setInterval(() => {
+    axios.post("https://dir.chain.chompe.rs/register", {port: 5000})
+    .then(res => {
+        // This is a success
+        clearInterval(registration);
     });
-    request.send(JSON.stringify({port: 5000});
-}while(!registered);
+}, 5000);
+
+console.log("Registered...");
 
 const generateNumber = (min, max) => {
     return Math.floor(
