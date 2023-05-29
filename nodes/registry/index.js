@@ -19,8 +19,6 @@ server.post("/register", async (req, res) => {
     // But, if we're thinking about 100% consensus, and
     // we have one node that we run in good faith, do we
     // care about bad actors?
-    console.log(`Contacted from ${req.headers["x-real-ip"]}`);
-    console.log(req);
     let identity = {
         host: req.headers["x-real-ip"] || req.headers["x-forwarded-for"],
         port: req.body.port
