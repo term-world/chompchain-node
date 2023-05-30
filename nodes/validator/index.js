@@ -19,7 +19,10 @@ let registration = setInterval(() => {
     .then(res => {
         // This is a success
         clearInterval(registration);
-    });
+    }).then(err => {
+        console.log("Unable to register node...");
+        process.exit();
+    });;
 }, 5000);
 
 console.log("Registered...");
@@ -41,7 +44,7 @@ const assign = async () => {
     let random = generateNumber(1000, 10000);
     do {
         random = generateNumber(1000, 10000);
-    } while (files.includes(random));
+    } while (files.includes(`${random}.json`));
     return random;
 }
 
@@ -72,11 +75,11 @@ const signed = async (signature, key) => {
 
 server.post("/transact", async (req, res) => {
     let key = req.body.key;
-    let sig = req.body.txn.signature;
     let txn = req.body.txn;
-    let filename = `${await assign()}.json`;
+    let sig = req.body.txn.signature;
+    let filename = `${await assign()}`;
     if(await verified(txn) && await signed(sig, key)){
-        fs.writeFile(`${process.env.MEMPOOL}/${filename}`, JSON.stringify(txn), (err) => {
+        fs.writeFile(`${process.env.MEMPOOL}/${filename}.json`, JSON.stringify(txn), (err) => {
             if(err) {
                 console.log(`500: ${err}`);
                 res.sendStatus(500);
