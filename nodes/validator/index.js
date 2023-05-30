@@ -17,15 +17,13 @@ app.listen(5000);
 let registration = setInterval(() => {
     axios.post("https://dir.chain.chompe.rs/register", {port: 5000})
     .then(res => {
-        // This is a success
         clearInterval(registration);
-    }).then(err => {
+        console.log("Registered...");
+    }).catch(err => {
         console.log("Unable to register node...");
         process.exit();
     });;
 }, 5000);
-
-console.log("Registered...");
 
 const generateNumber = (min, max) => {
     return Math.floor(
@@ -96,4 +94,12 @@ server.post("/transact", async (req, res) => {
 
 server.post("/validate", async (req, res) => {
     let block = req.body.block;
+});
+
+server.get("/mempool", async (req, res) => {
+    const files = await fs.readdir(
+        process.env.MEMPOOL
+    );
+    res.status(200).send(JSON.stringify(files));
+    return;
 });
