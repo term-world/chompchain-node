@@ -1,7 +1,11 @@
-const fs = require('fs-extra');
 const http = require('http');
+const fs = require('fs-extra');
 const express = require('express');
-const env = require('dotenv').config({ path: '/opt/server/.env' });
+// TODO: Replace references to dotenv; we can't
+// distribute .env files
+const env = require('dotenv').config({
+    path: '../.env'
+});
 
 let server = express();
 server.use(express.json());
@@ -12,24 +16,18 @@ app.listen(5001);
 const nodes = [];
 
 server.post("/register", async (req, res) => {
-    // How do we know that this is a genuine request?
-    // TODO: Implment some test; in future, spend some
-    // amount of coin (stake) to guarantee?
-
-    // But, if we're thinking about 100% consensus, and
-    // we have one node that we run in good faith, do we
-    // care about bad actors?
-    console.log(`Contacted from ${req.headers["x-real-ip"]}`);
     console.log(req);
     let identity = {
         host: req.headers["x-real-ip"] || req.headers["x-forwarded-for"],
         port: req.body.port
     }
-
     nodes.push(identity);
-    // Write to file?
     res.sendStatus(200);
     return;
+});
+
+server.post("/propagate", async (req, res) => {
+    
 });
 
 server.get("/directory", (req, res) => {

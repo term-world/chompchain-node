@@ -96,5 +96,4 @@ server.post("/transact", async (req, res) => {
 
 server.post("/validate", async (req, res) => {
     let block = req.body.block;
-    let pubKey = req.body.key;
 });
