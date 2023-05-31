@@ -16,7 +16,6 @@ app.listen(5001);
 const nodes = [];
 
 server.post("/register", async (req, res) => {
-    console.log(req);
     let identity = {
         host: req.headers["x-real-ip"] || req.headers["x-forwarded-for"],
         port: req.body.port
@@ -26,8 +25,14 @@ server.post("/register", async (req, res) => {
     return;
 });
 
-server.post("/propagate", async (req, res) => {
-    
+server.post("/keys", async (req, res) => {
+    let user = req.body.user;
+    let key = req.body.key;
+    if(!user && !key) {
+        res.sendStatus(418);
+        return
+    }
+    res.sendStatus(200);
 });
 
 server.get("/directory", (req, res) => {
