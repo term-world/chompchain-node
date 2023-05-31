@@ -30,8 +30,9 @@ server.post("/keys", async (req, res) => {
     let key = req.body.key;
     if(!user && !key) {
         res.sendStatus(418);
-        return
+        return;
     }
+    console.log(req.body);
     res.sendStatus(200);
 });
 
