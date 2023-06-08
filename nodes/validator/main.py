@@ -1,8 +1,8 @@
+import json
+import hashlib
 import aiohttp
 import asyncio
 from aiohttp import web
-import json
-# import hashlib
 
 async def register_node():
     url = "https://dir.chain.chompe.rs/register"
@@ -21,7 +21,9 @@ async def register_node():
 
             await asyncio.sleep(5)
 
-
+async def transaction_new(request):
+    print(request)
+    return web.Response(status = 200)
 
 # async def assign():
 #     files = await asyncio.to_thread(fs.readdir, process.env.MEMPOOL)
@@ -43,3 +45,13 @@ async def register_node():
 #     hashable = json.dumps(hashables, sort_keys=True).encode('utf-8')
 #     checksum = hashlib.sha256(hashable).hexdigest()
 #     return checksum == tx_hash
+
+# aiohttp application setup
+app = web.Application()
+
+# Routes are endpoints (i.e. URIs in this case)
+app.add_routes(
+    [web.get("/transactions/new", transaction_new)]
+)
+web.run_app(app)
+
