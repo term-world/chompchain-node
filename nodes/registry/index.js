@@ -15,21 +15,20 @@ app.listen(5001);
 
 const nodes = [];
 
-server.post("/register", async (req, res) => {
-    console.log(req);
-    let identity = {
-        host: req.headers["x-real-ip"] || req.headers["x-forwarded-for"],
-        port: req.body.port
-    }
-    nodes.push(identity);
-    res.sendStatus(200);
-    return;
-});
-
-server.post("/propagate", async (req, res) => {
-    
-});
-
-server.get("/directory", (req, res) => {
+server.get("/directory/get", (req, res) => {
     res.status(200).send(JSON.stringify(nodes));
+});
+
+server.post("/directory/register", async (req, res) => {
+    try{
+        let identity = {
+            host: req.headers["x-real-ip"] || req.headers["x-forwarded-for"],
+            port: req.body.port
+        }
+        nodes.push(identity);
+        res.sendStatus(200);
+    } catch {
+        res.sendStatus(500);
+    }
+    return;
 });
