@@ -22,8 +22,13 @@ async def register_node():
             await asyncio.sleep(5)
 
 async def transaction_new(request):
-    print(request)
-    return web.Response(status = 200)
+    try:
+        request_body = await request.json()
+        if not "name" in request_body:
+            return web.Response(status = 418)
+        return web.Response(status = 200)
+    except:
+        return web.Response(status = 500)
 
 # async def assign():
 #     files = await asyncio.to_thread(fs.readdir, process.env.MEMPOOL)
@@ -51,7 +56,7 @@ app = web.Application()
 
 # Routes are endpoints (i.e. URIs in this case)
 app.add_routes(
-    [web.get("/transactions/new", transaction_new)]
+    [web.post("/transactions/new", transaction_new)]
 )
 web.run_app(app)
 
