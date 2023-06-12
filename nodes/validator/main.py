@@ -29,7 +29,6 @@ async def transaction_new(request):
 #         random_number = random.randint(min_value, max_value)
 
 #     return str(random_number)
-    
 
 async def is_valid(txn: dict = {}) -> bool:
     hash = txn['hash']
