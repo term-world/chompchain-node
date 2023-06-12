@@ -21,14 +21,22 @@ async def register_node():
 
             await asyncio.sleep(5)
 
-async def transaction_new(request):
-    try:
-        request_body = await request.json()
-        if not "name" in request_body:
-            return web.Response(status = 418)
-        return web.Response(status = 200)
-    except:
-        return web.Response(status = 500)
+
+# async def transaction_new(request):
+#     try:
+#         request_body = await request.json()
+#         print(request_body)
+#         if not "name" in request_body:
+#             return web.Response(status = 418)
+#         return web.Response(status = 200)
+#     except:
+#         return web.Response(status = 500)
+    
+# async def mempool(request):
+#     mempool_dir = os.environ.get('MEMPOOL')
+#     files = await asyncio.get_event_loop().run_in_executor(None, os.listdir, mempool_dir)
+#     return web.json_response(files)    
+    
 
 # async def assign():
 #     files = await asyncio.to_thread(fs.readdir, process.env.MEMPOOL)
@@ -44,12 +52,30 @@ async def transaction_new(request):
 
 
 
-# async def verified(txn):
+# async def verify(txn):
 #     tx_hash = txn['hash']
-#     hashables = {k: v for k, v in txn.items() if k not in ['hash', 'signature']}
-#     hashable = json.dumps(hashables, sort_keys=True).encode('utf-8')
-#     checksum = hashlib.sha256(hashable).hexdigest()
+#     # Create a new dictionary without 'hash' and 'signature' keys
+#     hashables = {}
+#     for k, v in txn.items():
+#         if k != 'hash' and k != 'signature':
+#             hashables[k] = v
+#     # Sort the keys in alphabetical order
+#     sorted_keys = sorted(hashables.keys())
+#     # Convert the sorted keys and corresponding values to a string
+#     hashable_str = "{"
+#     for key in sorted_keys:
+#         value = hashables[key]
+#         hashable_str += f"'{key}': {json.dumps(value)}, "
+#     hashable_str = hashable_str.rstrip(', ') + "}"
+#     # Convert the string to bytes using UTF-8 encoding
+#     hashable_bytes = hashable_str.encode('utf-8')
+#     # Calculate the SHA256 hash of the bytes
+#     sha256_hash = hashlib.sha256()
+#     sha256_hash.update(hashable_bytes)
+#     checksum = sha256_hash.hexdigest()
+#     # Check if the calculated checksum matches the original tx_hash
 #     return checksum == tx_hash
+
 
 # aiohttp application setup
 app = web.Application()
@@ -58,5 +84,6 @@ app = web.Application()
 app.add_routes(
     [web.post("/transactions/new", transaction_new)]
 )
+app.add_routes(web.get('/', handle)),
 web.run_app(app)
 
