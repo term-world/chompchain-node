@@ -3,6 +3,8 @@ import hashlib
 import aiohttp
 import asyncio
 from aiohttp import web
+import os 
+import random
 
 async def transaction_new(request):
     try:
@@ -13,22 +15,6 @@ async def transaction_new(request):
     except:
         return web.Response(status = 500)
 
-# async def mempool(request):
-#     mempool_dir = os.environ.get('MEMPOOL')
-#     files = await asyncio.get_event_loop().run_in_executor(None, os.listdir, mempool_dir)
-#     return web.json_response(files)    
-    
-
-# async def assign():
-#     files = await asyncio.to_thread(fs.readdir, process.env.MEMPOOL)
-#     min_value = 1000
-#     max_value = 10000
-#     random_number = random.randint(min_value, max_value)
-
-#     while f"{random_number}.json" in files:
-#         random_number = random.randint(min_value, max_value)
-
-#     return str(random_number)
 
 async def is_valid(txn: dict = {}) -> bool:
     hash = txn['hash']
@@ -50,6 +36,41 @@ async def is_valid(txn: dict = {}) -> bool:
     checksum = sha256_hash.hexdigest()
     # Return result of hex string comparison
     return checksum == hash
+
+
+async def transact_handler(request):
+    try:
+        data = await request.json()
+        key = data.get('key')
+        txn = data.get('txn')
+        sig = data.get('txn', {}).get('signature')
+
+        filename = await assign()
+
+        if await is_valid(txn) and await signed(sig, key):
+            file_path = f"{os.environ['MEMPOOL']}/{filename}.json"
+            with open(file_path, 'w') as file:
+                json.dump(txn, file)
+            return web.Response(status=200)
+        
+        return web.Response(status=418)  # I'M A TEAPOT
+    except:
+        return web.Response(status=500)
+
+async def assign():
+    max_value = 10000
+    min_value = 1000
+    files = os.listdir(os.environ['MEMPOOL'])
+    random_number = random.randint(min_value, max_value)
+    
+    while f"{random_number}.json" in files:
+        random_number = random.randint(min_value, max_value)
+    
+    return random_number
+
+async def signed(sig, key):
+    # Implementation for signature verification goes here
+    pass
 
 
 # aiohttp application setup
