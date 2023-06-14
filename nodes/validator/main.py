@@ -29,7 +29,7 @@ async def is_valid_txn(txn: dict = {}) -> bool:
     for key in keys:
         if key not in txn:
             return False
-        if len(keys[key]) < 1:
+        if not keys[key]:
             return False
     return True
 
