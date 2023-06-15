@@ -16,12 +16,13 @@ async def transaction_new(request):
             file_path = f"{os.environ['MEMPOOL']}/{filename}.json"
             with open(file_path, 'w') as file:
                 json.dump(txn, file)
-        return web.Response(status = 200)
-    except:
-        return web.Response(status = 500)
+            return web.Response(status = 200)
+        else:
+            return web.Response(status = 500)
     # If we reach this point, the request is
     # at fault.
-    return web.Response(status = 418)
+    except:    
+        return web.Response(status = 418)
 
 async def is_valid_txn(txn: dict = {}) -> bool:
     keys = ["data", "to_addr", "from_addr",
@@ -54,56 +55,11 @@ async def is_valid_hash(txn: dict = {}) -> bool:
     # Return result of hex string comparison
     return checksum == hash
 
-<<<<<<< HEAD
-
-async def transact_handler(request):
-    try:
-        data = await request.json()
-        key = data.get('key')
-        txn = data.get('txn')
-        sig = data.get('txn', {}).get('signature')
-
-        filename = await assign()
-
-        if await is_valid(txn) and await signed(sig, key):
-            file_path = f"{os.environ['MEMPOOL']}/{filename}.json"
-            with open(file_path, 'w') as file:
-                json.dump(txn, file)
-            return web.Response(status=200)
-        
-        return web.Response(status=418)  # I'M A TEAPOT
-    except:
-        return web.Response(status=500)
-    
-    
-
-async def assign():
-    # Set the range of random numbers
-    max_value = 10000
-    min_value = 1000
-    
-    # Get the list of files in the MEMPOOL directory
-    files = os.listdir(os.environ['MEMPOOL'])
-    
-    # Generate a random number within the specified range
-    random_number = random.randint(min_value, max_value)
-    
-    # Check if the generated filename already exists in the list of files
-    while f"{random_number}.json" in files:
-        # If the filename exists, generate a new random number
-        random_number = random.randint(min_value, max_value)
-    
-    # Return the unique random number as the assigned filename
-    return random_number
-=======
 async def assign_filename():
     files = os.listdir(os.environ['MEMPOOL'])
     filename = secrets.token_hex(3)
->>>>>>> b14fac74f62bf34c5be54987bd0f14eae5a3f001
-
     while f"{filename}.json" in files:
         filename = secrets.token_hex(3)
-
     return filename
 
 # aiohttp application setup
