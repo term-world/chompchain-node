@@ -56,16 +56,26 @@ async def transact_handler(request):
         return web.Response(status=418)  # I'M A TEAPOT
     except:
         return web.Response(status=500)
+    
+    
 
 async def assign():
+    # Set the range of random numbers
     max_value = 10000
     min_value = 1000
+    
+    # Get the list of files in the MEMPOOL directory
     files = os.listdir(os.environ['MEMPOOL'])
+    
+    # Generate a random number within the specified range
     random_number = random.randint(min_value, max_value)
     
+    # Check if the generated filename already exists in the list of files
     while f"{random_number}.json" in files:
+        # If the filename exists, generate a new random number
         random_number = random.randint(min_value, max_value)
     
+    # Return the unique random number as the assigned filename
     return random_number
 
 async def signed(sig, key):
