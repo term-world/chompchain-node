@@ -23,7 +23,8 @@ async def transaction_new(request):
         return web.Response(status = 500)
     # If we reach this point, the request is
     # at fault.
-    return web.Response(status = 418)
+    except:    
+        return web.Response(status = 418)
 
 def is_valid_txn(txn: dict = {}) -> bool:
     keys = ["data", "to_addr", "from_addr",
@@ -59,10 +60,8 @@ def is_valid_hash(txn: dict = {}) -> bool:
 def assign_filename():
     files = os.listdir(os.environ['MEMPOOL'])
     filename = secrets.token_hex(3)
-
     while f"{filename}.json" in files:
         filename = secrets.token_hex(3)
-
     return filename
 
 chain = chompchain.Chain()
