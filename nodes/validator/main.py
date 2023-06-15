@@ -5,35 +5,37 @@ import secrets
 import hashlib
 import aiohttp
 import asyncio
+import chompchain
 
 from aiohttp import web
 
 async def transaction_new(request):
     try:
         txn = await request.json()
-        if await is_valid_hash(txn) and await is_valid_txn(txn):
-            filename = await assign_filename()
+        if is_valid_hash(txn) and is_valid_txn(txn):
+            filename = assign_filename()
             file_path = f"{os.environ['MEMPOOL']}/{filename}.json"
             with open(file_path, 'w') as file:
                 json.dump(txn, file)
         return web.Response(status = 200)
-    except:
+    except Exception as e:
+        #print(e)
         return web.Response(status = 500)
     # If we reach this point, the request is
     # at fault.
     return web.Response(status = 418)
 
-async def is_valid_txn(txn: dict = {}) -> bool:
+def is_valid_txn(txn: dict = {}) -> bool:
     keys = ["data", "to_addr", "from_addr",
             "hash", "timestamp", "signature"]
     for key in keys:
         if key not in txn:
             return False
-        if not keys[key]:
+        if not keys[keys.index(key)]:
             return False
     return True
 
-async def is_valid_hash(txn: dict = {}) -> bool:
+def is_valid_hash(txn: dict = {}) -> bool:
     hash = txn['hash']
     # Create a new dictionary without 'hash' and 'signature' keys
     hashables = {}
@@ -54,7 +56,7 @@ async def is_valid_hash(txn: dict = {}) -> bool:
     # Return result of hex string comparison
     return checksum == hash
 
-async def assign_filename():
+def assign_filename():
     files = os.listdir(os.environ['MEMPOOL'])
     filename = secrets.token_hex(3)
 
@@ -62,6 +64,8 @@ async def assign_filename():
         filename = secrets.token_hex(3)
 
     return filename
+
+chain = chompchain.Chain()
 
 # aiohttp application setup
 app = web.Application()
