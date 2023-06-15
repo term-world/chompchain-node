@@ -1,22 +1,39 @@
+import os
 import json
+import random
+import secrets
 import hashlib
 import aiohttp
 import asyncio
+
 from aiohttp import web
-import os 
-import random
 
 async def transaction_new(request):
     try:
         txn = await request.json()
-        if await is_valid(txn):
-            pass
+        if await is_valid_hash(txn) and await is_valid_txn(txn):
+            filename = await assign_filename()
+            file_path = f"{os.environ['MEMPOOL']}/{filename}.json"
+            with open(file_path, 'w') as file:
+                json.dump(txn, file)
         return web.Response(status = 200)
     except:
         return web.Response(status = 500)
+    # If we reach this point, the request is
+    # at fault.
+    return web.Response(status = 418)
 
+async def is_valid_txn(txn: dict = {}) -> bool:
+    keys = ["data", "to_addr", "from_addr",
+            "hash", "timestamp", "signature"]
+    for key in keys:
+        if key not in txn:
+            return False
+        if not keys[key]:
+            return False
+    return True
 
-async def is_valid(txn: dict = {}) -> bool:
+async def is_valid_hash(txn: dict = {}) -> bool:
     hash = txn['hash']
     # Create a new dictionary without 'hash' and 'signature' keys
     hashables = {}
@@ -37,6 +54,7 @@ async def is_valid(txn: dict = {}) -> bool:
     # Return result of hex string comparison
     return checksum == hash
 
+<<<<<<< HEAD
 
 async def transact_handler(request):
     try:
@@ -77,11 +95,16 @@ async def assign():
     
     # Return the unique random number as the assigned filename
     return random_number
+=======
+async def assign_filename():
+    files = os.listdir(os.environ['MEMPOOL'])
+    filename = secrets.token_hex(3)
+>>>>>>> b14fac74f62bf34c5be54987bd0f14eae5a3f001
 
-async def signed(sig, key):
-    # Implementation for signature verification goes here
-    pass
+    while f"{filename}.json" in files:
+        filename = secrets.token_hex(3)
 
+    return filename
 
 # aiohttp application setup
 app = web.Application()
