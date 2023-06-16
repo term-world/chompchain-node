@@ -2,8 +2,9 @@ module.exports = {
   apps : [
     {
         name   : "validator",
-        script : "/opt/server/chompchain-node/nodes/validator/index.js",
+        script : "/opt/server/chompchain-node/nodes/validator/main.py",
         exec_mode: "fork",
+        interpreter: "/usr/bin/python"
     },
     {
         name   : "registry",
