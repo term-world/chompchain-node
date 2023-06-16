@@ -23,7 +23,7 @@ async def transaction_new(request):
         return web.Response(status = 500)
     # If we reach this point, the request is
     # at fault.
-    except:    
+    except:
         return web.Response(status = 418)
 
 def is_valid_txn(txn: dict = {}) -> bool:
