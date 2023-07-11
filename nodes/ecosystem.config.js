@@ -4,7 +4,7 @@ module.exports = {
         name   : "validator",
         script : "/opt/server/chompchain-node/nodes/validator/main.py",
         exec_mode: "fork",
-        interpreter: "/usr/bin/python"
+        interpreter: "python"
     },
     {
         name   : "registry",
